@@ -32,15 +32,11 @@ int main(int argc, const char* argv[])
 	std::cout << "Quick test" << std::endl;
 
 	movingAverage::fillTestData(inputFloats);
-
 	performanceTest("quick_test_floats_4", inputFloats, outputFloats, 4);
-
 	movingAverage::dump(outputFloats, "floats_quick_test.txt");
 
 	movingAverage::fillTestData(inputDoubles);
-
 	performanceTest("quick_test_doubles_4", inputDoubles, outputDoubles, 4);
-
 	movingAverage::dump(outputDoubles, "doubles_quick_test.txt");
 
 	std::cout << "Quick test done !" << std::endl;
@@ -48,7 +44,6 @@ int main(int argc, const char* argv[])
 	std::cout << "Floats performance test" << std::endl;
 
 	movingAverage::fillRandomData(inputFloats);
-
 	performanceTest("floats_4", inputFloats, outputFloats, 4);
 	performanceTest("floats_8", inputFloats, outputFloats, 8);
 	performanceTest("floats_16", inputFloats, outputFloats, 16);
@@ -61,7 +56,6 @@ int main(int argc, const char* argv[])
 	std::cout << "Doubles performance test" << std::endl;
 
 	movingAverage::fillRandomData(inputDoubles);
-
 	performanceTest("doubles_4", inputDoubles, outputDoubles, 4);
 	performanceTest("doubles_8", inputDoubles, outputDoubles, 8);
 	performanceTest("doubles_16", inputDoubles, outputDoubles, 16);

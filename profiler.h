@@ -50,7 +50,7 @@ namespace profiler
 
             for(auto& item : m_items)
             {
-                file << item.counter << " " << item.name << " " << item.timeSpent << std::endl;
+                file << item.counter << "	" << item.name << "	" << item.timeSpent << std::endl;
             }
 
             file.close();

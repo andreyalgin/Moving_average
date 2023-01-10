@@ -56,7 +56,7 @@ namespace movingAverage
             frameSize = input.size();
         }
 
-        std::cout << "Frame size: " << frameSize << std::endl;
+        //std::cout << "Frame size: " << frameSize << " Frames number: " << numFrames << std::endl;
 
         for(size_t j = 0; j < frameSize; ++j)
         {
