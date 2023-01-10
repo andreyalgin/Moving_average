@@ -3,109 +3,75 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <ctime>
 #include <iostream>
 #include <fstream>
 #include <string>
 
 #include <unistd.h>
 
-using Input = std::array<float, 64>;
-using Output = std::array<float, 49>;
+#include "movingAverage.h"
+#include "profiler.h"
 
-static Input inputData;
-static Output outputData;
+static std::array<float, 1000000> inputFloats;
+static std::array<float, 1000000> outputFloats;
 
-template<typename TInput>
-void fillRandomData(TInput& input)
-{
-	using InputType = typename std::remove_reference<decltype(input[0])>::type;
-
-	for(InputType& data : input)
-	{
-		data = static_cast<InputType>(std::rand());
-	}
-}
-
-template<typename TInput>
-void fillTestData(TInput& input)
-{
-	using InputType = typename std::remove_reference<decltype(input[0])>::type;
-
-	InputType counter = InputType{};
-
-	for(InputType& data : input)
-	{
-		data = counter++;
-	}
-}
+static std::array<double, 1000000> inputDoubles;
+static std::array<double, 1000000> outputDoubles;
 
 template<typename TInput, typename TOutput>
-void computeMovingAverage(TInput& input, TOutput& output, size_t frameSize)
+void performanceTest(const char *name, TInput& inputData, TOutput& outputData, size_t frameSize)
 {
-	using InputType = typename std::remove_reference<decltype(input[0])>::type;
-	using OutputType = typename std::remove_reference<decltype(output[0])>::type;
+	profiler::Profiler profiler{name};
 
-	size_t numFrames;
-	InputType summ = 0;	
-	//OutputType summ = 0;
-	uint32_t i = 0;
-	uint32_t n = 0;
-
-	if(input.size() > frameSize)
-	{
-		numFrames = input.size() - frameSize + 1;
-		numFrames = std::min(numFrames, output.size());
-	}else{
-		numFrames = 1;
-		frameSize = input.size();
-	}
-
-	for(size_t j = 0; j < frameSize; ++j)
-	{
-		summ += input[j] / frameSize;
-	}
-
-	output[0] = summ;
-
-	for(size_t i = 1; i < numFrames; ++i)
-	{
-		summ = summ - (input[i - 1] / frameSize) + (input[i + frameSize - 1] / frameSize);
-
-		output[i] = summ;
-	}
-}
-
-template<typename TOutput>
-void dump(TOutput& output, const char *name)
-{
-	std::ofstream file;
-
-	file.open(name);
-
-	for(auto& data : output)
-	{
-		file << data << std::endl;
-	}
-
-	file.close();
+	movingAverage::computeMovingAverage(inputData, outputData, frameSize);
 }
 
 int main(int argc, const char* argv[])
 {
-	fillTestData<Input>(inputData);
+	std::cout << "Quick test" << std::endl;
 
-	computeMovingAverage<Input, Output>(inputData, outputData, 16);
+	movingAverage::fillTestData(inputFloats);
 
-	dump<Output>(outputData, "test.txt");
+	performanceTest("quick_test_floats_4", inputFloats, outputFloats, 4);
 
+	movingAverage::dump(outputFloats, "floats_quick_test.txt");
 
-	fillRandomData<Input>(inputData);
+	movingAverage::fillTestData(inputDoubles);
 
-	computeMovingAverage<Input, Output>(inputData, outputData, 16);
+	performanceTest("quick_test_doubles_4", inputDoubles, outputDoubles, 4);
 
-	dump<Output>(outputData, "random.txt");
+	movingAverage::dump(outputDoubles, "doubles_quick_test.txt");
 
-	std::cout << "Done !" << std::endl;
+	std::cout << "Quick test done !" << std::endl;
+
+	std::cout << "Floats performance test" << std::endl;
+
+	movingAverage::fillRandomData(inputFloats);
+
+	performanceTest("floats_4", inputFloats, outputFloats, 4);
+	performanceTest("floats_8", inputFloats, outputFloats, 8);
+	performanceTest("floats_16", inputFloats, outputFloats, 16);
+	performanceTest("floats_32", inputFloats, outputFloats, 32);
+	performanceTest("floats_64", inputFloats, outputFloats, 64);
+	performanceTest("floats_128", inputFloats, outputFloats, 128);
+
+	std::cout << "Floats performance test done !" << std::endl;
+
+	std::cout << "Doubles performance test" << std::endl;
+
+	movingAverage::fillRandomData(inputDoubles);
+
+	performanceTest("doubles_4", inputDoubles, outputDoubles, 4);
+	performanceTest("doubles_8", inputDoubles, outputDoubles, 8);
+	performanceTest("doubles_16", inputDoubles, outputDoubles, 16);
+	performanceTest("doubles_32", inputDoubles, outputDoubles, 32);
+	performanceTest("doubles_64", inputDoubles, outputDoubles, 64);
+	performanceTest("doubles_128", inputDoubles, outputDoubles, 128);
+
+	std::cout << "Doubles performance test done !" << std::endl;
+
+	profiler::Profiler::dump("results.txt");
 
 	return 0;
 }
