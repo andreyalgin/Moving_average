@@ -60,7 +60,7 @@ namespace movingAverage
 
         for(size_t j = 0; j < frameSize; ++j)
         {
-            summ += input[j] / frameSize;
+            summ += static_cast<OutputType>(input[j]) / static_cast<OutputType>(frameSize);
         }
 
         output[0] = summ;
